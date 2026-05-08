@@ -2,103 +2,36 @@ import streamlit as st
 import json
 import pandas as pd
 import random
+import requests # NOVO: Biblioteca para buscar imagens na internet
 
 # =========================
 # CONFIGURAÇÃO DA PÁGINA
 # =========================
-st.set_page_config(
-    page_title="Minha PokéColeção",
-    page_icon="🍃",
-    layout="centered"
-)
+st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="centered")
 
 # =========================
-# CSS PERSONALIZADO
+# CSS PERSONALIZADO (MANTIDO)
 # =========================
 st.markdown("""
 <style>
-/* FUNDO GERAL */
 .stApp { background-color: #F0F9F6; }
-
-/* TOPO DO STREAMLIT */
 header[data-testid="stHeader"] { background-color: #3E9A74 !important; }
-
-/* TEXOS E ÍCONES DO TOPO */
 header[data-testid="stHeader"] * { color: white !important; fill: white !important; }
-
-/* SIDEBAR */
 [data-testid="stSidebar"] { background-color: #DDEEE6; }
-
-/* TEXTOS */
-h1, h2, h3, p, label, span, div.stMarkdown {
-    color: black !important;
-    font-family: Arial, sans-serif;
-}
-
-/* INPUTS */
-div[data-baseweb="input"] {
-    background-color: #DDEEE6 !important;
-    border: 2px solid #3E9A74 !important;
-    border-radius: 10px !important;
-    overflow: hidden;
-}
-
-/* FUNDO INTERNO DO INPUT */
-div[data-baseweb="input"] input {
-    background-color: #C8E6D8 !important;
-    color: #1D5A4C !important;
-    border-radius: 10px !important;
-}
-
-/* QUANDO CLICA */
-div[data-baseweb="input"]:focus-within {
-    border: 2px solid #73D2C6 !important;
-    box-shadow: 0 0 8px #73D2C6 !important;
-}
-
-/* BOTÕES */
-.stButton > button {
-    background-color: #3E9A74 !important;
-    color: white !important;
-    border-radius: 10px !important;
-    border: 2px solid #1D5A4C !important;
-    font-weight: bold !important;
-    transition: 0.3s !important;
-}
-
-/* HOVER BOTÃO */
-.stButton > button:hover {
-    background-color: #73D2C6 !important;
-    color: #1D5A4C !important;
-    border: 2px solid #1D5A4C !important;
-}
-
-/* CARDS */
-[data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"] {
-    background-color: white;
-    border: 2px solid #73D2C6 !important;
-    border-radius: 12px !important;
-    padding: 10px;
-}
-
-/* CHECKBOX */
-.stCheckbox label {
-    color: #1D5A4C !important;
-    font-weight: bold;
-}
-
-/* MÉTRICAS */
-[data-testid="metric-container"] {
-    background-color: #DDEEE6;
-    border: 2px solid #73D2C6;
-    padding: 10px;
-    border-radius: 12px;
-}
+h1, h2, h3, p, label, span, div.stMarkdown { color: black !important; font-family: Arial, sans-serif; }
+div[data-baseweb="input"] { background-color: #DDEEE6 !important; border: 2px solid #3E9A74 !important; border-radius: 10px !important; overflow: hidden; }
+div[data-baseweb="input"] input { background-color: #C8E6D8 !important; color: #1D5A4C !important; border-radius: 10px !important; }
+div[data-baseweb="input"]:focus-within { border: 2px solid #73D2C6 !important; box-shadow: 0 0 8px #73D2C6 !important; }
+.stButton > button { background-color: #3E9A74 !important; color: white !important; border-radius: 10px !important; border: 2px solid #1D5A4C !important; font-weight: bold !important; transition: 0.3s !important; }
+.stButton > button:hover { background-color: #73D2C6 !important; color: #1D5A4C !important; border: 2px solid #1D5A4C !important; }
+[data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"] { background-color: white; border: 2px solid #73D2C6 !important; border-radius: 12px !important; padding: 10px; }
+.stCheckbox label { color: #1D5A4C !important; font-weight: bold; }
+[data-testid="metric-container"] { background-color: #DDEEE6; border: 2px solid #73D2C6; padding: 10px; border-radius: 12px; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# FUNÇÕES
+# FUNÇÕES DE DADOS E API
 # =========================
 def carregar_dados():
     try:
@@ -111,36 +44,48 @@ def salvar_dados(dados):
     with open("portfolio_pokemon.json", "w") as arquivo:
         json.dump(dados, arquivo, indent=4)
 
+# --- NOVA FUNÇÃO: BUSCAR IMAGEM ---
+def buscar_imagem_pokemon(nome_carta):
+    try:
+        # Pega só a primeira palavra (ex: "Charizard ex" vira "charizard")
+        nome_base = nome_carta.split()[0].lower()
+        url = f"https://pokeapi.co/api/v2/pokemon/{nome_base}"
+        
+        resposta = requests.get(url)
+        if resposta.status_code == 200:
+            dados = resposta.json()
+            # Retorna a arte oficial maravilhosa!
+            return dados['sprites']['other']['official-artwork']['front_default']
+    except:
+        pass
+    # Se der erro ou for carta de treinador, retorna uma Pokébola
+    return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+
 # =========================
 # SESSION STATE
 # =========================
 if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
-# =========================
-# GIFS
-# =========================
 gifs_fofos = {
     "Bulbasaur": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif",
     "Pikachu": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif",
-    "Eevee": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/133.gif",
     "Squirtle": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/7.gif",
     "Charmander": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif"
 }
 
 # =========================
-# TÍTULO
+# INTERFACE PRINCIPAL
 # =========================
 st.markdown("## 🍃 Coleção de Cartinhas Pokémon 🍃")
 
 col1, col2, col3 = st.columns([1, 1, 1])
-
 with col2:
     nome_poke, link_gif = random.choice(list(gifs_fofos.items()))
     st.image(link_gif, caption=f"Um {nome_poke} selvagem apareceu!")
 
 # =========================
-# SIDEBAR
+# SIDEBAR (NOVA CARTA)
 # =========================
 with st.sidebar:
     st.header("⚙️ Configurações")
@@ -151,18 +96,21 @@ with st.sidebar:
     novo_nome = st.text_input("Nome da Carta (ex: Charizard ex)")
     
     if st.button("Adicionar à Coleção"):
-        novo_nome = novo_nome.strip() # Remove espaços vazios no início e fim
+        novo_nome = novo_nome.strip()
         
         if novo_nome:
-            # Verifica se a carta já existe na coleção
             cartas_existentes = [carta['nome'].lower() for carta in st.session_state.colecao]
             
             if novo_nome.lower() in cartas_existentes:
                 st.warning("Esta carta já está na sua coleção!")
             else:
+                # Busca a imagem ANTES de salvar!
+                url_imagem = buscar_imagem_pokemon(novo_nome)
+                
                 st.session_state.colecao.append({
                     "nome": novo_nome,
-                    "concluido": False
+                    "concluido": False,
+                    "imagem": url_imagem # Salva a foto junto com a carta
                 })
                 salvar_dados(st.session_state.colecao)
                 st.success(f"{novo_nome} adicionada!")
@@ -171,7 +119,7 @@ with st.sidebar:
             st.error("Digite o nome da carta!")
 
 # =========================
-# COLEÇÃO
+# EXIBIÇÃO DAS CARTAS (COM IMAGENS)
 # =========================
 st.subheader("🍃 Minha Coleção")
 
@@ -183,8 +131,13 @@ else:
     for index, carta in enumerate(st.session_state.colecao):
         with cols[index % 3]:
             with st.container(border=True):
-                st.markdown(f"### {carta['nome']}")
+                # Pega a imagem salva, ou mostra Pokébola se for carta antiga sem foto
+                img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
                 
+                # Exibe a imagem no card!
+                st.image(img_url, use_container_width=True)
+                
+                st.markdown(f"### {carta['nome']}")
                 status = st.checkbox("Tenho na coleção", value=carta['concluido'], key=f"check_{index}")
                 
                 if status != carta['concluido']:
@@ -192,7 +145,7 @@ else:
                     salvar_dados(st.session_state.colecao)
                     st.rerun()
 
-                if st.button("🗑️ Remover", key=f"del_{index}", use_container_width=True):
+                if st.button("🗑️", key=f"del_{index}", use_container_width=True):
                     st.session_state.colecao.pop(index)
                     salvar_dados(st.session_state.colecao)
                     st.rerun()
