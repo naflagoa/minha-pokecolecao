@@ -63,9 +63,17 @@ if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
 # =========================
-# INTERFACE PRINCIPAL
+# INTERFACE PRINCIPAL (LOGO)
 # =========================
-st.markdown("## 🍃 Coleção de Cartinhas Pokémon 🍃")
+# Usando colunas para deixar o logo bem centralizado na tela
+col_espaco1, col_logo, col_espaco2 = st.columns([1, 2, 1])
+
+with col_logo:
+    # URL do logo oficial com fundo transparente
+    st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", use_container_width=True)
+
+st.markdown("<h3 style='text-align: center;'>🍃 Coleção de Cartinhas 🍃</h3>", unsafe_allow_html=True)
+st.write("") # Dá um espacinho antes de começar as cartas
 
 # =========================
 # SIDEBAR (NOVA CARTA)
