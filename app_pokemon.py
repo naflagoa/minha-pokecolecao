@@ -1,8 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
-import random
-import requests # NOVO: Biblioteca para buscar imagens na internet
+import requests
 
 # =========================
 # CONFIGURAÇÃO DA PÁGINA
@@ -10,7 +9,7 @@ import requests # NOVO: Biblioteca para buscar imagens na internet
 st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="centered")
 
 # =========================
-# CSS PERSONALIZADO (MANTIDO)
+# CSS PERSONALIZADO 
 # =========================
 st.markdown("""
 <style>
@@ -44,21 +43,17 @@ def salvar_dados(dados):
     with open("portfolio_pokemon.json", "w") as arquivo:
         json.dump(dados, arquivo, indent=4)
 
-# --- NOVA FUNÇÃO: BUSCAR IMAGEM ---
 def buscar_imagem_pokemon(nome_carta):
     try:
-        # Pega só a primeira palavra (ex: "Charizard ex" vira "charizard")
         nome_base = nome_carta.split()[0].lower()
         url = f"https://pokeapi.co/api/v2/pokemon/{nome_base}"
         
         resposta = requests.get(url)
         if resposta.status_code == 200:
             dados = resposta.json()
-            # Retorna a arte oficial maravilhosa!
             return dados['sprites']['other']['official-artwork']['front_default']
     except:
         pass
-    # Se der erro ou for carta de treinador, retorna uma Pokébola
     return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
 
 # =========================
@@ -67,22 +62,10 @@ def buscar_imagem_pokemon(nome_carta):
 if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
-gifs_fofos = {
-    "Bulbasaur": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif",
-    "Pikachu": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif",
-    "Squirtle": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/7.gif",
-    "Charmander": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif"
-}
-
 # =========================
 # INTERFACE PRINCIPAL
 # =========================
 st.markdown("## 🍃 Coleção de Cartinhas Pokémon 🍃")
-
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    nome_poke, link_gif = random.choice(list(gifs_fofos.items()))
-    st.image(link_gif, caption=f"Um {nome_poke} selvagem apareceu!")
 
 # =========================
 # SIDEBAR (NOVA CARTA)
@@ -104,13 +87,12 @@ with st.sidebar:
             if novo_nome.lower() in cartas_existentes:
                 st.warning("Esta carta já está na sua coleção!")
             else:
-                # Busca a imagem ANTES de salvar!
                 url_imagem = buscar_imagem_pokemon(novo_nome)
                 
                 st.session_state.colecao.append({
                     "nome": novo_nome,
                     "concluido": False,
-                    "imagem": url_imagem # Salva a foto junto com a carta
+                    "imagem": url_imagem
                 })
                 salvar_dados(st.session_state.colecao)
                 st.success(f"{novo_nome} adicionada!")
@@ -119,7 +101,7 @@ with st.sidebar:
             st.error("Digite o nome da carta!")
 
 # =========================
-# EXIBIÇÃO DAS CARTAS (COM IMAGENS)
+# EXIBIÇÃO DAS CARTAS
 # =========================
 st.subheader("🍃 Minha Coleção")
 
@@ -131,10 +113,7 @@ else:
     for index, carta in enumerate(st.session_state.colecao):
         with cols[index % 3]:
             with st.container(border=True):
-                # Pega a imagem salva, ou mostra Pokébola se for carta antiga sem foto
                 img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
-                
-                # Exibe a imagem no card!
                 st.image(img_url, use_container_width=True)
                 
                 st.markdown(f"### {carta['nome']}")
