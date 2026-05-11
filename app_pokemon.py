@@ -35,31 +35,42 @@ div[data-baseweb="input"] input {
     border-radius: 10px !important;
 }
 
-/* ESTILO DO SELECTBOX (Filtro de Status) */
+/* =========================================
+   ESTILO DO SELECTBOX (CORRIGIDO)
+   ========================================= */
+/* Fundo da caixa principal */
 div[data-baseweb="select"] > div {
     background-color: #DDEEE6 !important;
     border: 2px solid #3E9A74 !important;
     border-radius: 10px !important;
 }
-div[data-baseweb="select"] span {
+
+/* Força todo o texto e a setinha dentro da caixa a ficarem verdes */
+div[data-baseweb="select"] * {
     color: #1D5A4C !important;
     font-weight: bold;
 }
 
-/* ESTILO DA LISTA SUSPENSA DO SELECTBOX */
-ul[data-baseweb="menu"] {
-    background-color: #DDEEE6 !important;
-    border: 2px solid #3E9A74 !important;
-    border-radius: 10px !important;
+/* O menu flutuante (Popover) que abre quando clica */
+div[data-baseweb="popover"] > div, ul[data-baseweb="menu"] {
+    background-color: #F0F9F6 !important;
+    border: 1px solid #3E9A74 !important;
+    border-radius: 8px !important;
 }
+
+/* As opções individuais dentro da lista */
 li[role="option"] {
     color: #1D5A4C !important;
-    background-color: transparent !important;
+    background-color: #F0F9F6 !important;
+    font-weight: bold;
 }
-li[role="option"]:hover {
+
+/* Quando passa o mouse ou quando a opção está selecionada */
+li[role="option"]:hover, li[role="option"][aria-selected="true"] {
     background-color: #73D2C6 !important;
     color: #1D5A4C !important;
 }
+/* ========================================= */
 
 /* BOTÕES */
 .stButton > button {
@@ -99,14 +110,12 @@ li[role="option"]:hover {
 # =========================
 def carregar_dados():
     try:
-        # Lê os dados da planilha em tempo real
         df = conn.read(ttl=0)
         return df.to_dict('records')
     except:
         return []
 
 def salvar_dados(dados_lista):
-    # Converte a lista para DataFrame e atualiza o Google Sheets
     df = pd.DataFrame(dados_lista)
     conn.update(data=df)
 
@@ -129,7 +138,7 @@ if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
 # =========================
-# INTERFACE PRINCIPAL (LOGO E TÍTULO)
+# INTERFACE PRINCIPAL
 # =========================
 col_e1, col_logo, col_e2 = st.columns([1, 2, 1])
 with col_logo:
@@ -138,7 +147,7 @@ with col_logo:
 st.markdown("<h3 style='text-align: center;'>🍃 Coleção de Cartinhas da Carol 🍃</h3>", unsafe_allow_html=True)
 
 # =========================
-# SIDEBAR (CADASTRO)
+# SIDEBAR
 # =========================
 with st.sidebar:
     st.header("⚙️ Configurações")
@@ -168,11 +177,10 @@ with st.sidebar:
             st.error("Digite o nome da carta!")
 
 # =========================
-# EXIBIÇÃO DA COLEÇÃO (COM FILTROS)
+# EXIBIÇÃO DA COLEÇÃO
 # =========================
 st.divider()
 
-# Layout dos filtros
 col_busca, col_status = st.columns([2, 1])
 
 with col_busca:
@@ -190,7 +198,6 @@ else:
     cartas_exibidas = 0 
     
     for index, carta in enumerate(st.session_state.colecao):
-        # Lógica de Filtros
         if busca_nome.lower() not in str(carta.get('nome', '')).lower():
             continue
         
@@ -199,7 +206,6 @@ else:
         if filtro_status == "Faltando" and carta.get('concluido'):
             continue
             
-        # Renderização do Card
         with cols[cartas_exibidas % 3]:
             with st.container(border=True):
                 img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
@@ -225,7 +231,7 @@ else:
         st.info("Nenhuma carta encontrada com esses filtros. 🍃")
 
 # =========================
-# DASHBOARD / ANALYTICS
+# DASHBOARD
 # =========================
 st.divider()
 st.subheader("📊 Analytics da PokéColeção")
