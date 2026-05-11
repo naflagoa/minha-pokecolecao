@@ -22,7 +22,7 @@ header[data-testid="stHeader"] * { color: white !important; fill: white !importa
 [data-testid="stSidebar"] { background-color: #DDEEE6; }
 h1, h2, h3, p, label, span, div.stMarkdown { color: black !important; font-family: Arial, sans-serif; }
 
-/* ESTILO DOS INPUTS */
+/* ESTILO DOS INPUTS (Caixa de Texto) */
 div[data-baseweb="input"] {
     background-color: #DDEEE6 !important;
     border: 2px solid #3E9A74 !important;
@@ -33,6 +33,32 @@ div[data-baseweb="input"] input {
     background-color: #C8E6D8 !important;
     color: #1D5A4C !important;
     border-radius: 10px !important;
+}
+
+/* ESTILO DO SELECTBOX (Filtro de Status) */
+div[data-baseweb="select"] > div {
+    background-color: #DDEEE6 !important;
+    border: 2px solid #3E9A74 !important;
+    border-radius: 10px !important;
+}
+div[data-baseweb="select"] span {
+    color: #1D5A4C !important;
+    font-weight: bold;
+}
+
+/* ESTILO DA LISTA SUSPENSA DO SELECTBOX */
+ul[data-baseweb="menu"] {
+    background-color: #DDEEE6 !important;
+    border: 2px solid #3E9A74 !important;
+    border-radius: 10px !important;
+}
+li[role="option"] {
+    color: #1D5A4C !important;
+    background-color: transparent !important;
+}
+li[role="option"]:hover {
+    background-color: #73D2C6 !important;
+    color: #1D5A4C !important;
 }
 
 /* BOTÕES */
