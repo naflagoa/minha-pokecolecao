@@ -3,17 +3,10 @@ import pandas as pd
 import requests
 from streamlit_gsheets import GSheetsConnection
 
-# =========================
-# CONFIGURAÇÃO DA PÁGINA
-# =========================
 st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="centered")
 
-# --- CONEXÃO COM GOOGLE SHEETS ---
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# =========================
-# CSS PERSONALIZADO (TEMA BULBASAUR)
-# =========================
 st.markdown("""
 <style>
 .stApp { background-color: #F0F9F6; }
@@ -105,9 +98,6 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] {
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# FUNÇÕES DE DADOS E API
-# =========================
 def carregar_dados():
     try:
         df = conn.read(ttl=0)
@@ -131,24 +121,15 @@ def buscar_imagem_pokemon(nome_carta):
         pass
     return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
 
-# =========================
-# SESSION STATE
-# =========================
 if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
-# =========================
-# INTERFACE PRINCIPAL
-# =========================
 col_e1, col_logo, col_e2 = st.columns([1, 2, 1])
 with col_logo:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", use_container_width=True)
 
 st.markdown("<h3 style='text-align: center;'>🍃 Coleção de Cartinhas da Carol 🍃</h3>", unsafe_allow_html=True)
 
-# =========================
-# SIDEBAR
-# =========================
 with st.sidebar:
     st.header("⚙️ Configurações")
     st.info("Desenvolvido para a coleção da Carol.")
@@ -176,9 +157,6 @@ with st.sidebar:
         else:
             st.error("Digite o nome da carta!")
 
-# =========================
-# EXIBIÇÃO DA COLEÇÃO
-# =========================
 st.divider()
 
 col_busca, col_status = st.columns([2, 1])
@@ -230,9 +208,6 @@ else:
     if cartas_exibidas == 0:
         st.info("Nenhuma carta encontrada com esses filtros. 🍃")
 
-# =========================
-# DASHBOARD
-# =========================
 st.divider()
 st.subheader("📊 Analytics da PokéColeção")
 df_metrica = pd.DataFrame(st.session_state.colecao)
