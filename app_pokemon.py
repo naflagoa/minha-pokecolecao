@@ -3,101 +3,141 @@ import pandas as pd
 import requests
 from streamlit_gsheets import GSheetsConnection
 
+# Configuração da página
 st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="centered")
 
+# Conexão com a Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
+# Customização Completa com CSS Avançado (Glow-Up Visual)
 st.markdown("""
 <style>
-.stApp { background-color: #F0F9F6; }
-header[data-testid="stHeader"] { background-color: #3E9A74 !important; }
-header[data-testid="stHeader"] * { color: white !important; fill: white !important; }
-[data-testid="stSidebar"] { background-color: #DDEEE6; }
-h1, h2, h3, p, label, span, div.stMarkdown { color: black !important; font-family: Arial, sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* ESTILO DOS INPUTS (Caixa de Texto) */
+/* APLICAÇÃO GLOBAL DA FONTE POPPINS */
+html, body, [data-testid="stAppViewContainer"] * {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* FUNDO DO APLICATIVO MODERNO E LIMPO */
+.stApp { 
+    background-color: #F8FAF9 !important; 
+}
+
+/* BARRA SUPERIOR (HEADER) */
+header[data-testid="stHeader"] { 
+    background-color: #3E9A74 !important; 
+}
+header[data-testid="stHeader"] * { 
+    color: white !important; 
+    fill: white !important; 
+}
+
+/* BARRA LATERAL (SIDEBAR) SUAVE */
+[data-testid="stSidebar"] { 
+    background-color: #EBF2EE !important; 
+}
+
+/* PADRONIZAÇÃO DE TEXTOS PRINCIPAIS */
+h1, h2, h3, h4, h5, h6, p, label, span, div.stMarkdown { 
+    color: #1E293B !important; 
+}
+
+/* CAIXAS DE INPUT DE TEXTO COM BORDAS SUAVES E FOCO INTELIGENTE */
 div[data-baseweb="input"] {
-    background-color: #DDEEE6 !important;
-    border: 2px solid #3E9A74 !important;
-    border-radius: 10px !important;
-    overflow: hidden;
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 12px !important;
+    padding: 2px 4px !important;
+    transition: all 0.2s ease-in-out !important;
+}
+div[data-baseweb="input"]:focus-within {
+    border-color: #3E9A74 !important;
+    box-shadow: 0 0 0 3px rgba(62, 154, 116, 0.15) !important;
 }
 div[data-baseweb="input"] input {
-    background-color: #C8E6D8 !important;
-    color: #1D5A4C !important;
-    border-radius: 10px !important;
+    background-color: transparent !important;
+    color: #334155 !important;
 }
 
-/* =========================================
-   ESTILO DO SELECTBOX (CORRIGIDO)
-   ========================================= */
-/* Fundo da caixa principal */
+/* CAIXA DE SELEÇÃO (SELECTBOX) REESTILIZADA */
 div[data-baseweb="select"] > div {
-    background-color: #DDEEE6 !important;
-    border: 2px solid #3E9A74 !important;
-    border-radius: 10px !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease-in-out !important;
 }
-
-/* Força todo o texto e a setinha dentro da caixa a ficarem verdes */
+div[data-baseweb="select"]:focus-within {
+    border-color: #3E9A74 !important;
+}
 div[data-baseweb="select"] * {
-    color: #1D5A4C !important;
-    font-weight: bold;
+    color: #334155 !important;
 }
 
-/* O menu flutuante (Popover) que abre quando clica */
+/* MENU DO SELECTBOX (POPOVER) */
 div[data-baseweb="popover"] > div, ul[data-baseweb="menu"] {
-    background-color: #F0F9F6 !important;
-    border: 1px solid #3E9A74 !important;
-    border-radius: 8px !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
 }
-
-/* As opções individuais dentro da lista */
 li[role="option"] {
-    color: #1D5A4C !important;
-    background-color: #F0F9F6 !important;
-    font-weight: bold;
+    color: #334155 !important;
+    background-color: transparent !important;
+    padding: 10px 14px !important;
 }
-
-/* Quando passa o mouse ou quando a opção está selecionada */
 li[role="option"]:hover, li[role="option"][aria-selected="true"] {
-    background-color: #73D2C6 !important;
+    background-color: #E6F4EA !important;
     color: #1D5A4C !important;
 }
-/* ========================================= */
 
-/* BOTÕES */
+/* BOTÕES ERGONÓMICOS COM EFEITO DE PRESSÃO */
 .stButton > button {
     background-color: #3E9A74 !important;
     color: white !important;
-    border-radius: 10px !important;
-    border: 2px solid #1D5A4C !important;
-    font-weight: bold !important;
-    transition: 0.3s !important;
+    border-radius: 12px !important;
+    border: none !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
 }
 .stButton > button:hover {
-    background-color: #73D2C6 !important;
-    color: #1D5A4C !important;
-    border: 2px solid #1D5A4C !important;
+    background-color: #2D7A59 !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+.stButton > button:active {
+    transform: translateY(0px) !important;
 }
 
-/* CARDS DAS CARTAS */
+/* CARDS DAS CARTAS COM SOMBRAS SUAVES E EFEITO FLUTUANTE (HOVER) */
 [data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"] {
-    background-color: white;
-    border: 2px solid #73D2C6 !important;
-    border-radius: 12px !important;
-    padding: 15px;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.025) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+[data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"]:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
 }
 
-/* MÉTRICAS */
+/* CARDS DE MÉTRICAS */
 [data-testid="metric-container"] {
-    background-color: #DDEEE6;
-    border: 2px solid #73D2C6;
-    padding: 10px;
-    border-radius: 12px;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    padding: 16px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01) !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
+# Funções de manipulação de dados
 def carregar_dados():
     try:
         df = conn.read(ttl=0)
@@ -121,15 +161,18 @@ def buscar_imagem_pokemon(nome_carta):
         pass
     return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
 
+# Inicialização do estado da coleção
 if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
-col_e1, col_logo, col_e2 = st.columns([1, 2, 1])
+# Topo do Site (Logo e Título)
+col_e1, col_logo, col_e2 = st.columns([1, 1.8, 1])
 with col_logo:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", use_container_width=True)
 
-st.markdown("<h3 style='text-align: center;'>🍃 Coleção de Cartinhas da Carol 🍃</h3>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; font-weight: 700; margin-top: 10px; margin-bottom: 25px;'>🍃 Coleção de Cartinhas da Carol 🍃</h2>", unsafe_allow_html=True)
 
+# Configuração da Barra Lateral (Sidebar)
 with st.sidebar:
     st.header("⚙️ Configurações")
     st.info("Desenvolvido para a coleção da Carol.")
@@ -150,7 +193,7 @@ with st.sidebar:
                     "nome": novo_nome,
                     "concluido": False,
                     "imagem": url_img,
-                    "favorito": False  # Nova propriedade adicionada por padrão
+                    "favorito": False
                 })
                 salvar_dados(st.session_state.colecao)
                 st.success(f"{novo_nome} adicionada!")
@@ -160,6 +203,7 @@ with st.sidebar:
 
 st.divider()
 
+# Filtros e Busca (Mais espaçados e alinhados)
 col_busca, col_status = st.columns([2, 1])
 
 with col_busca:
@@ -170,13 +214,11 @@ with col_status:
 
 st.write("") 
 
+# Renderização dos Cards com Ordenação por Favoritos
 if not st.session_state.colecao:
     st.warning("Sua coleção ainda está vazia! Adicione cartas na barra lateral.")
 else:
-    # O SEGREDO ESTÁ AQUI:
-    # Ordenamos a lista para que 'favorito' == True venha primeiro.
-    # O Python ordena de forma "crescente" (False/0 antes de True/1), 
-    # por isso usamos 'reverse=True' para colocar True no topo.
+    # Ordena a lista para colocar as favoritas (True) no topo
     colecao_ordenada = sorted(
         st.session_state.colecao, 
         key=lambda k: bool(k.get('favorito', False)), 
@@ -195,8 +237,7 @@ else:
         if filtro_status == "Faltando" and carta.get('concluido'):
             continue
             
-        # Como ordenamos os dados em uma lista separada, precisamos achar o index original 
-        # dentro do st.session_state.colecao para poder atualizar/deletar a carta correta.
+        # Encontra o índice correspondente no estado original
         index_original = st.session_state.colecao.index(carta)
             
         with cols[cartas_exibidas % 3]:
@@ -204,24 +245,23 @@ else:
                 img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
                 st.image(img_url, use_container_width=True)
                 
-                # Exibe um emoji de estrela amarela se for favorita
+                # Nome com indicador visual de estrela
                 estrela = "⭐ " if carta.get('favorito', False) else ""
-                st.markdown(f"**{estrela}{carta.get('nome', 'Sem nome')}**")
+                st.markdown(f"<p style='font-weight: 600; font-size: 16px; margin-bottom: 2px;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
                 
-                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
+                status = st.checkbox("Tenho na pasta", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
                 
                 if status != carta.get('concluido'):
                     st.session_state.colecao[index_original]['concluido'] = status
                     salvar_dados(st.session_state.colecao)
                     st.rerun()
 
-                # Criamos duas colunas na base do card para o botão de Favoritar e Deletar
+                # Botões de Ações inferiores dentro do Card
                 col_fav, col_del = st.columns(2)
                 
                 with col_fav:
                     label_estrela = "⭐" if carta.get('favorito', False) else "☆"
                     if st.button(label_estrela, key=f"fav_{index_original}", use_container_width=True):
-                        # Inverte o estado atual do favorito
                         st.session_state.colecao[index_original]['favorito'] = not carta.get('favorito', False)
                         salvar_dados(st.session_state.colecao)
                         st.rerun()
@@ -237,13 +277,14 @@ else:
     if cartas_exibidas == 0:
         st.info("Nenhuma carta encontrada com esses filtros. 🍃")
 
+# Seção de Estatísticas (Analytics)
 st.divider()
 st.subheader("📊 Analytics da PokéColeção")
 df_metrica = pd.DataFrame(st.session_state.colecao)
 
 if not df_metrica.empty:
     total = len(df_metrica)
-    obtidas = len(df_metrica[df_metrica['concluido'] == True])
+    obtidas = len(df_metrica[df_metrica['concluido'] == True] if 'concluido' in df_metrica.columns else [])
     falta = total - obtidas
     progresso = obtidas / total if total > 0 else 0
     
