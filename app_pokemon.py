@@ -9,7 +9,7 @@ st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="
 # Conexão com a Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Customização Completa com CSS Avançado (Glow-Up Visual)
+# Customização Completa com CSS Avançado (Glow-Up Visual Sem Erros de Fundo)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -43,8 +43,9 @@ h1, h2, h3, h4, h5, h6, p, label, span, div.stMarkdown {
     color: #1E293B !important; 
 }
 
-/* CAIXAS DE INPUT DE TEXTO COM BORDAS SUAVES E FOCO INTELIGENTE */
-div[data-baseweb="input"] {
+/* CAIXAS DE INPUT DE TEXTO COM BORDAS SUAVES E FUNDO BRANCO CORRIGIDO */
+div[data-baseweb="input"], 
+div[data-baseweb="base-input"] {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E1 !important;
     border-radius: 12px !important;
@@ -56,8 +57,9 @@ div[data-baseweb="input"]:focus-within {
     box-shadow: 0 0 0 3px rgba(62, 154, 116, 0.15) !important;
 }
 div[data-baseweb="input"] input {
-    background-color: transparent !important;
+    background-color: #FFFFFF !important;
     color: #334155 !important;
+    -webkit-text-fill-color: #334155 !important;
 }
 
 /* CAIXA DE SELEÇÃO (SELECTBOX) REESTILIZADA */
