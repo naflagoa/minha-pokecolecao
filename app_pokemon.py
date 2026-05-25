@@ -4,7 +4,7 @@ import requests
 from streamlit_gsheets import GSheetsConnection
 
 # Configuração da página
-st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="centered")
+st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="wide") # Mudei para 'wide' para caber melhor as 5 cartas
 
 # Conexão com a Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -119,7 +119,7 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
     border-radius: 16px !important;
-    padding: 20px !important;
+    padding: 15px !important;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.025) !important;
     transition: transform 0.25s ease, box-shadow 0.25s ease !important;
 }
@@ -227,7 +227,9 @@ else:
         reverse=True
     )
 
-    cols = st.columns(3)
+    # DEFININDO AS 5 COLUNAS AQUI
+    num_colunas = 5
+    cols = st.columns(num_colunas)
     cartas_exibidas = 0 
     
     for carta in colecao_ordenada:
@@ -242,16 +244,17 @@ else:
         # Encontra o índice correspondente no estado original
         index_original = st.session_state.colecao.index(carta)
             
-        with cols[cartas_exibidas % 3]:
+        # Distribuindo nas 5 colunas
+        with cols[cartas_exibidas % num_colunas]:
             with st.container(border=True):
                 img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
                 st.image(img_url, use_container_width=True)
                 
                 # Nome com indicador visual de estrela
                 estrela = "⭐ " if carta.get('favorito', False) else ""
-                st.markdown(f"<p style='font-weight: 600; font-size: 16px; margin-bottom: 2px;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-weight: 600; font-size: 14px; margin-bottom: 2px; text-align: center;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
                 
-                status = st.checkbox("Tenho na pasta", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
+                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
                 
                 if status != carta.get('concluido'):
                     st.session_state.colecao[index_original]['concluido'] = status
