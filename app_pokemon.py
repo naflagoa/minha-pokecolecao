@@ -149,7 +149,8 @@ with st.sidebar:
                 st.session_state.colecao.append({
                     "nome": novo_nome,
                     "concluido": False,
-                    "imagem": url_img
+                    "imagem": url_img,
+                    "favorito": False  # Nova propriedade adicionada por padrão
                 })
                 salvar_dados(st.session_state.colecao)
                 st.success(f"{novo_nome} adicionada!")
@@ -172,10 +173,20 @@ st.write("")
 if not st.session_state.colecao:
     st.warning("Sua coleção ainda está vazia! Adicione cartas na barra lateral.")
 else:
+    # O SEGREDO ESTÁ AQUI:
+    # Ordenamos a lista para que 'favorito' == True venha primeiro.
+    # O Python ordena de forma "crescente" (False/0 antes de True/1), 
+    # por isso usamos 'reverse=True' para colocar True no topo.
+    colecao_ordenada = sorted(
+        st.session_state.colecao, 
+        key=lambda k: bool(k.get('favorito', False)), 
+        reverse=True
+    )
+
     cols = st.columns(3)
     cartas_exibidas = 0 
     
-    for index, carta in enumerate(st.session_state.colecao):
+    for carta in colecao_ordenada:
         if busca_nome.lower() not in str(carta.get('nome', '')).lower():
             continue
         
@@ -184,24 +195,42 @@ else:
         if filtro_status == "Faltando" and carta.get('concluido'):
             continue
             
+        # Como ordenamos os dados em uma lista separada, precisamos achar o index original 
+        # dentro do st.session_state.colecao para poder atualizar/deletar a carta correta.
+        index_original = st.session_state.colecao.index(carta)
+            
         with cols[cartas_exibidas % 3]:
             with st.container(border=True):
                 img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
                 st.image(img_url, use_container_width=True)
                 
-                st.markdown(f"**{carta.get('nome', 'Sem nome')}**")
+                # Exibe um emoji de estrela amarela se for favorita
+                estrela = "⭐ " if carta.get('favorito', False) else ""
+                st.markdown(f"**{estrela}{carta.get('nome', 'Sem nome')}**")
                 
-                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index}")
+                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
                 
                 if status != carta.get('concluido'):
-                    st.session_state.colecao[index]['concluido'] = status
+                    st.session_state.colecao[index_original]['concluido'] = status
                     salvar_dados(st.session_state.colecao)
                     st.rerun()
 
-                if st.button("🗑️", key=f"del_{index}", use_container_width=True):
-                    st.session_state.colecao.pop(index)
-                    salvar_dados(st.session_state.colecao)
-                    st.rerun()
+                # Criamos duas colunas na base do card para o botão de Favoritar e Deletar
+                col_fav, col_del = st.columns(2)
+                
+                with col_fav:
+                    label_estrela = "⭐" if carta.get('favorito', False) else "☆"
+                    if st.button(label_estrela, key=f"fav_{index_original}", use_container_width=True):
+                        # Inverte o estado atual do favorito
+                        st.session_state.colecao[index_original]['favorito'] = not carta.get('favorito', False)
+                        salvar_dados(st.session_state.colecao)
+                        st.rerun()
+
+                with col_del:
+                    if st.button("🗑️", key=f"del_{index_original}", use_container_width=True):
+                        st.session_state.colecao.pop(index_original)
+                        salvar_dados(st.session_state.colecao)
+                        st.rerun()
                     
         cartas_exibidas += 1
         
