@@ -146,9 +146,23 @@ def carregar_dados():
         # Se a planilha estiver completamente vazia, previne erros de leitura
         if df.empty:
             return []
-        return df.to_dict('records')
+            
+        registros = df.to_dict('records')
+        
+        # LIMPEZA DE DADOS: Garante que vazios e textos "False" virem False real
+        for carta in registros:
+            for campo in ['concluido', 'favorito']:
+                val = carta.get(campo, False)
+                # Se for NaN (vazio do pandas) ou strings que representam falso, vira False
+                if pd.isna(val) or str(val).strip().lower() in ['false', '0', '', 'nan', 'none']:
+                    carta[campo] = False
+                else:
+                    carta[campo] = bool(val)
+                    
+        return registros
+        
     except Exception as e:
-        # Mostra o erro na tela e PARA o aplicativo para não apagar nada
+        # Mostra o erro na tela e PARA o aplicativo para não apagar nada accidentalmente
         st.error(f"Erro ao conectar com a planilha. Não faça alterações! Detalhe: {e}")
         st.stop() 
 
