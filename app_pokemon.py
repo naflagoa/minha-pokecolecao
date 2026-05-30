@@ -267,4 +267,49 @@ else:
                 estrela = "⭐ " if carta.get('favorito', False) else ""
                 st.markdown(f"<p style='font-weight: 600; font-size: 14px; margin-bottom: 2px; text-align: center;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
                 
-                status = st.checkbox("Tenho", value=bool(carta.
+                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
+                
+                if status != carta.get('concluido'):
+                    st.session_state.colecao[index_original]['concluido'] = status
+                    salvar_dados(st.session_state.colecao)
+                    st.rerun()
+
+                # Botões de Ações inferiores dentro do Card
+                col_fav, col_del = st.columns(2)
+                
+                with col_fav:
+                    label_estrela = "⭐" if carta.get('favorito', False) else "☆"
+                    if st.button(label_estrela, key=f"fav_{index_original}", use_container_width=True):
+                        st.session_state.colecao[index_original]['favorito'] = not carta.get('favorito', False)
+                        salvar_dados(st.session_state.colecao)
+                        st.rerun()
+
+                with col_del:
+                    if st.button("🗑️", key=f"del_{index_original}", use_container_width=True):
+                        st.session_state.colecao.pop(index_original)
+                        salvar_dados(st.session_state.colecao)
+                        st.rerun()
+                    
+        cartas_exibidas += 1
+        
+    if cartas_exibidas == 0:
+        st.info("Nenhuma carta encontrada com esses filtros. 🍃")
+
+# Seção de Estatísticas (Analytics)
+st.divider()
+st.subheader("📊 Analytics da PokéColeção")
+df_metrica = pd.DataFrame(st.session_state.colecao)
+
+if not df_metrica.empty:
+    total = len(df_metrica)
+    obtidas = len(df_metrica[df_metrica['concluido'] == True] if 'concluido' in df_metrica.columns else [])
+    falta = total - obtidas
+    progresso = obtidas / total if total > 0 else 0
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Total de Cards", total)
+    m2.metric("Na Pasta", obtidas)
+    m3.metric("Faltando", falta)
+    
+    st.write(f"**Progresso Geral: {progresso*100:.1f}%**")
+    st.progress(progresso)
