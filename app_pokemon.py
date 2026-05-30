@@ -9,43 +9,21 @@ st.set_page_config(page_title="Minha PokéColeção", page_icon="🍃", layout="
 # Conexão com a Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Customização Completa com CSS Avançado (Glow-Up Visual Sem Erros de Fundo)
+# Customização Completa com CSS Avançado
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* APLICAÇÃO GLOBAL DA FONTE POPPINS */
 html, body, [data-testid="stAppViewContainer"] * {
     font-family: 'Poppins', sans-serif !important;
 }
+.stApp { background-color: #F8FAF9 !important; }
+header[data-testid="stHeader"] { background-color: #3E9A74 !important; }
+header[data-testid="stHeader"] * { color: white !important; fill: white !important; }
+[data-testid="stSidebar"] { background-color: #EBF2EE !important; }
+h1, h2, h3, h4, h5, h6, p, label, span, div.stMarkdown { color: #1E293B !important; }
 
-/* FUNDO DO APLICATIVO MODERNO E LIMPO */
-.stApp { 
-    background-color: #F8FAF9 !important; 
-}
-
-/* BARRA SUPERIOR (HEADER) */
-header[data-testid="stHeader"] { 
-    background-color: #3E9A74 !important; 
-}
-header[data-testid="stHeader"] * { 
-    color: white !important; 
-    fill: white !important; 
-}
-
-/* BARRA LATERAL (SIDEBAR) SUAVE */
-[data-testid="stSidebar"] { 
-    background-color: #EBF2EE !important; 
-}
-
-/* PADRONIZAÇÃO DE TEXTOS PRINCIPAIS */
-h1, h2, h3, h4, h5, h6, p, label, span, div.stMarkdown { 
-    color: #1E293B !important; 
-}
-
-/* CAIXAS DE INPUT DE TEXTO COM BORDAS SUAVES E FUNDO BRANCO CORRIGIDO */
-div[data-baseweb="input"], 
-div[data-baseweb="base-input"] {
+div[data-baseweb="input"], div[data-baseweb="base-input"] {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E1 !important;
     border-radius: 12px !important;
@@ -56,44 +34,26 @@ div[data-baseweb="input"]:focus-within {
     border-color: #3E9A74 !important;
     box-shadow: 0 0 0 3px rgba(62, 154, 116, 0.15) !important;
 }
-div[data-baseweb="input"] input {
-    background-color: #FFFFFF !important;
-    color: #334155 !important;
-    -webkit-text-fill-color: #334155 !important;
-}
+div[data-baseweb="input"] input { background-color: #FFFFFF !important; color: #334155 !important; -webkit-text-fill-color: #334155 !important; }
 
-/* CAIXA DE SELEÇÃO (SELECTBOX) REESTILIZADA */
 div[data-baseweb="select"] > div {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E1 !important;
     border-radius: 12px !important;
     transition: all 0.2s ease-in-out !important;
 }
-div[data-baseweb="select"]:focus-within {
-    border-color: #3E9A74 !important;
-}
-div[data-baseweb="select"] * {
-    color: #334155 !important;
-}
+div[data-baseweb="select"]:focus-within { border-color: #3E9A74 !important; }
+div[data-baseweb="select"] * { color: #334155 !important; }
 
-/* MENU DO SELECTBOX (POPOVER) */
 div[data-baseweb="popover"] > div, ul[data-baseweb="menu"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
 }
-li[role="option"] {
-    color: #334155 !important;
-    background-color: transparent !important;
-    padding: 10px 14px !important;
-}
-li[role="option"]:hover, li[role="option"][aria-selected="true"] {
-    background-color: #E6F4EA !important;
-    color: #1D5A4C !important;
-}
+li[role="option"] { color: #334155 !important; background-color: transparent !important; padding: 10px 14px !important; }
+li[role="option"]:hover, li[role="option"][aria-selected="true"] { background-color: #E6F4EA !important; color: #1D5A4C !important; }
 
-/* BOTÕES ERGONÓMICOS COM EFEITO DE PRESSÃO */
 .stButton > button {
     background-color: #3E9A74 !important;
     color: white !important;
@@ -110,11 +70,8 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] {
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
-.stButton > button:active {
-    transform: translateY(0px) !important;
-}
+.stButton > button:active { transform: translateY(0px) !important; }
 
-/* CARDS DAS CARTAS COM SOMBRAS SUAVES E EFEITO FLUTUANTE (HOVER) */
 [data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
@@ -128,7 +85,6 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
 }
 
-/* CARDS DE MÉTRICAS */
 [data-testid="metric-container"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
@@ -139,40 +95,30 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] {
 </style>
 """, unsafe_allow_html=True)
 
-# Funções de manipulação de dados CORRIGIDAS E SEGURAS
+# Funções de manipulação de dados
 def carregar_dados():
     try:
         df = conn.read(ttl=0)
-        # Se a planilha estiver completamente vazia, previne erros de leitura
-        if df.empty:
-            return []
-            
+        if df.empty: return []
         registros = df.to_dict('records')
         
-        # LIMPEZA DE DADOS: Garante que vazios e textos "False" virem False real
         for carta in registros:
             for campo in ['concluido', 'favorito']:
                 val = carta.get(campo, False)
-                # Se for NaN (vazio do pandas) ou strings que representam falso, vira False
                 if pd.isna(val) or str(val).strip().lower() in ['false', '0', '', 'nan', 'none']:
                     carta[campo] = False
                 else:
                     carta[campo] = bool(val)
-                    
         return registros
-        
     except Exception as e:
-        # Mostra o erro na tela e PARA o aplicativo para não apagar nada accidentalmente
         st.error(f"Erro ao conectar com a planilha. Não faça alterações! Detalhe: {e}")
         st.stop() 
 
 def salvar_dados(dados_lista):
-    # Garante que as colunas sempre existam, mesmo se a coleção estiver vazia
     if not dados_lista:
          df = pd.DataFrame(columns=["nome", "concluido", "imagem", "favorito"])
     else:
          df = pd.DataFrame(dados_lista)
-         
     try:
         conn.update(data=df)
     except Exception as e:
@@ -186,22 +132,21 @@ def buscar_imagem_pokemon(nome_carta):
         if resposta.status_code == 200:
             dados = resposta.json()
             return dados['sprites']['other']['official-artwork']['front_default']
-    except:
-        pass
+    except: pass
     return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
 
-# Inicialização do estado da coleção
+# Inicialização do estado
 if 'colecao' not in st.session_state:
     st.session_state.colecao = carregar_dados()
 
-# Topo do Site (Logo e Título)
+# Topo do Site
 col_e1, col_logo, col_e2 = st.columns([1, 1.8, 1])
 with col_logo:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", use_container_width=True)
 
 st.markdown("<h2 style='text-align: center; font-weight: 700; margin-top: 10px; margin-bottom: 25px;'>🍃 Coleção de Cartinhas da Carol 🍃</h2>", unsafe_allow_html=True)
 
-# Configuração da Barra Lateral (Sidebar)
+# Barra Lateral
 with st.sidebar:
     st.header("⚙️ Configurações")
     st.info("Desenvolvido para a coleção da Carol.")
@@ -219,10 +164,7 @@ with st.sidebar:
             else:
                 url_img = buscar_imagem_pokemon(novo_nome)
                 st.session_state.colecao.append({
-                    "nome": novo_nome,
-                    "concluido": False,
-                    "imagem": url_img,
-                    "favorito": False
+                    "nome": novo_nome, "concluido": False, "imagem": url_img, "favorito": False
                 })
                 salvar_dados(st.session_state.colecao)
                 st.success(f"{novo_nome} adicionada!")
@@ -232,84 +174,89 @@ with st.sidebar:
 
 st.divider()
 
-# Filtros e Busca (Mais espaçados e alinhados)
+# Filtros
 col_busca, col_status = st.columns([2, 1])
-
 with col_busca:
     busca_nome = st.text_input("🔍 Buscar carta pelo nome...", "")
-
 with col_status:
     filtro_status = st.selectbox("Mostrar:", ["Todas", "Obtidas", "Faltando"])
 
 st.write("") 
 
-# Renderização dos Cards com Ordenação por Favoritos
+# Preparando a visualização em 2 blocos separados
 if not st.session_state.colecao:
     st.warning("Sua coleção ainda está vazia! Adicione cartas na barra lateral.")
 else:
-    # Ordena a lista para colocar as favoritas (True) no topo
-    colecao_ordenada = sorted(
-        st.session_state.colecao, 
-        key=lambda k: bool(k.get('favorito', False)), 
-        reverse=True
-    )
+    cartas_favoritas = []
+    cartas_outras = []
 
-    # DEFININDO AS 5 COLUNAS AQUI
-    num_colunas = 5
-    cols = st.columns(num_colunas)
-    cartas_exibidas = 0 
-    
-    for carta in colecao_ordenada:
+    # Aplica os filtros e divide a lista em duas
+    for carta in st.session_state.colecao:
         if busca_nome.lower() not in str(carta.get('nome', '')).lower():
             continue
-        
         if filtro_status == "Obtidas" and not carta.get('concluido'):
             continue
         if filtro_status == "Faltando" and carta.get('concluido'):
             continue
             
-        # Encontra o índice correspondente no estado original
-        index_original = st.session_state.colecao.index(carta)
-            
-        # Distribuindo nas 5 colunas
-        with cols[cartas_exibidas % num_colunas]:
-            with st.container(border=True):
-                img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
-                st.image(img_url, use_container_width=True)
-                
-                # Nome com indicador visual de estrela
-                estrela = "⭐ " if carta.get('favorito', False) else ""
-                st.markdown(f"<p style='font-weight: 600; font-size: 14px; margin-bottom: 2px; text-align: center;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
-                
-                status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
-                
-                if status != carta.get('concluido'):
-                    st.session_state.colecao[index_original]['concluido'] = status
-                    salvar_dados(st.session_state.colecao)
-                    st.rerun()
+        if carta.get('favorito', False):
+            cartas_favoritas.append(carta)
+        else:
+            cartas_outras.append(carta)
 
-                # Botões de Ações inferiores dentro do Card
-                col_fav, col_del = st.columns(2)
-                
-                with col_fav:
-                    label_estrela = "⭐" if carta.get('favorito', False) else "☆"
-                    if st.button(label_estrela, key=f"fav_{index_original}", use_container_width=True):
-                        st.session_state.colecao[index_original]['favorito'] = not carta.get('favorito', False)
-                        salvar_dados(st.session_state.colecao)
-                        st.rerun()
-
-                with col_del:
-                    if st.button("🗑️", key=f"del_{index_original}", use_container_width=True):
-                        st.session_state.colecao.pop(index_original)
-                        salvar_dados(st.session_state.colecao)
-                        st.rerun()
+    # Função auxiliar para desenhar a grade de cartas
+    def exibir_grade_cartas(lista_cartas):
+        num_colunas = 5
+        cols = st.columns(num_colunas)
+        for i, carta in enumerate(lista_cartas):
+            index_original = st.session_state.colecao.index(carta)
+            with cols[i % num_colunas]:
+                with st.container(border=True):
+                    img_url = carta.get('imagem', "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png")
+                    st.image(img_url, use_container_width=True)
                     
-        cartas_exibidas += 1
-        
-    if cartas_exibidas == 0:
+                    estrela = "⭐ " if carta.get('favorito', False) else ""
+                    st.markdown(f"<p style='font-weight: 600; font-size: 14px; margin-bottom: 2px; text-align: center;'>{estrela}{carta.get('nome', 'Sem nome')}</p>", unsafe_allow_html=True)
+                    
+                    status = st.checkbox("Tenho", value=bool(carta.get('concluido', False)), key=f"check_{index_original}")
+                    
+                    if status != carta.get('concluido'):
+                        st.session_state.colecao[index_original]['concluido'] = status
+                        salvar_dados(st.session_state.colecao)
+                        st.rerun()
+
+                    col_fav, col_del = st.columns(2)
+                    with col_fav:
+                        label_estrela = "⭐" if carta.get('favorito', False) else "☆"
+                        if st.button(label_estrela, key=f"fav_{index_original}", use_container_width=True):
+                            st.session_state.colecao[index_original]['favorito'] = not carta.get('favorito', False)
+                            salvar_dados(st.session_state.colecao)
+                            st.rerun()
+
+                    with col_del:
+                        if st.button("🗑️", key=f"del_{index_original}", use_container_width=True):
+                            st.session_state.colecao.pop(index_original)
+                            salvar_dados(st.session_state.colecao)
+                            st.rerun()
+
+    # Exibindo os Favoritos
+    if cartas_favoritas:
+        st.markdown("### ⭐ Meus Favoritos")
+        exibir_grade_cartas(cartas_favoritas)
+
+    # Adiciona um divisor somente se existirem cartas nos dois grupos
+    if cartas_favoritas and cartas_outras:
+        st.divider()
+
+    # Exibindo o restante da coleção
+    if cartas_outras:
+        st.markdown("### 🍃 Outros Pokémon")
+        exibir_grade_cartas(cartas_outras)
+
+    if not cartas_favoritas and not cartas_outras:
         st.info("Nenhuma carta encontrada com esses filtros. 🍃")
 
-# Seção de Estatísticas (Analytics)
+# Analytics
 st.divider()
 st.subheader("📊 Analytics da PokéColeção")
 df_metrica = pd.DataFrame(st.session_state.colecao)
