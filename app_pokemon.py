@@ -14,15 +14,37 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-html, body, [data-testid="stAppViewContainer"] * {
+/* APLICAÇÃO GLOBAL DA FONTE POPPINS (Sem quebrar os ícones) */
+html, body {
     font-family: 'Poppins', sans-serif !important;
 }
+
+h1, h2, h3, h4, h5, h6, p, label, li, span, div.stMarkdown, input, button {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* PROTEÇÃO PARA OS ÍCONES NATIVOS DO STREAMLIT */
+span[class*="material-symbols"], 
+i, 
+.material-icons, 
+[data-testid="stIconMaterial"] {
+    font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+}
+
+/* FUNDO DO APLICATIVO MODERNO E LIMPO */
 .stApp { background-color: #F8FAF9 !important; }
+
+/* BARRA SUPERIOR (HEADER) */
 header[data-testid="stHeader"] { background-color: #3E9A74 !important; }
 header[data-testid="stHeader"] * { color: white !important; fill: white !important; }
+
+/* BARRA LATERAL (SIDEBAR) SUAVE */
 [data-testid="stSidebar"] { background-color: #EBF2EE !important; }
+
+/* PADRONIZAÇÃO DE TEXTOS PRINCIPAIS */
 h1, h2, h3, h4, h5, h6, p, label, span, div.stMarkdown { color: #1E293B !important; }
 
+/* CAIXAS DE INPUT DE TEXTO */
 div[data-baseweb="input"], div[data-baseweb="base-input"] {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E1 !important;
@@ -36,6 +58,7 @@ div[data-baseweb="input"]:focus-within {
 }
 div[data-baseweb="input"] input { background-color: #FFFFFF !important; color: #334155 !important; -webkit-text-fill-color: #334155 !important; }
 
+/* CAIXA DE SELEÇÃO (SELECTBOX) */
 div[data-baseweb="select"] > div {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E1 !important;
@@ -45,6 +68,7 @@ div[data-baseweb="select"] > div {
 div[data-baseweb="select"]:focus-within { border-color: #3E9A74 !important; }
 div[data-baseweb="select"] * { color: #334155 !important; }
 
+/* MENU DO SELECTBOX (POPOVER) */
 div[data-baseweb="popover"] > div, ul[data-baseweb="menu"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
@@ -54,6 +78,7 @@ div[data-baseweb="popover"] > div, ul[data-baseweb="menu"] {
 li[role="option"] { color: #334155 !important; background-color: transparent !important; padding: 10px 14px !important; }
 li[role="option"]:hover, li[role="option"][aria-selected="true"] { background-color: #E6F4EA !important; color: #1D5A4C !important; }
 
+/* BOTÕES ERGONÓMICOS */
 .stButton > button {
     background-color: #3E9A74 !important;
     color: white !important;
@@ -72,6 +97,7 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] { background-co
 }
 .stButton > button:active { transform: translateY(0px) !important; }
 
+/* CARDS DAS CARTAS */
 [data-testid="stVerticalBlock"] > [style*="flex-direction: column"] > [data-testid="stVerticalBlock"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
@@ -85,6 +111,7 @@ li[role="option"]:hover, li[role="option"][aria-selected="true"] { background-co
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
 }
 
+/* CARDS DE MÉTRICAS */
 [data-testid="metric-container"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
